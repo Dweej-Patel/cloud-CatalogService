@@ -22,12 +22,14 @@ def getEvent(id=""):
     return rsp
 
 
-@application.route("/Event/", methods=["POST"])
+@application.route("/Event", methods=["POST"])
 def addEvent():
     body = json.loads(request.data.decode())
     try:
-        event = Events(subject=body['subject'], type=body.get('type'), message=body['message'],
-                       created_date=body['created_date'])
+        if "type" in body:
+            event = Events(subject=body['subject'], type=body.get('type'), message=body['message'])
+        else:
+            event = Events(subject=body['subject'], message=body['message'])
         db.session.add(event)
         db.session.commit()
     except Exception as e:
@@ -59,7 +61,6 @@ def updateEvent(id):
                 subject=body['subject'],
                 type=body['type'],
                 message=body['message'],
-                created_date=body['created_date']
             )
         )
         db.session.commit()
