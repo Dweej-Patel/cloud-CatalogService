@@ -13,10 +13,17 @@ def index():
 @application.route("/Event", methods=["GET"])
 @application.route("/Event/id/<id>", methods=["GET"])
 def getEvent(id=""):
+    offset = request.args.get('offset')
+    limit = request.args.get('limit')
     if id:
         event = Events.query.get(id)
     else:
-        event = Events.query.all()
+        if not limit:
+            limit = 100
+        if not offset:
+            offset = 0
+
+        event = Events.query.offset(int(offset)).limit(int(limit)).all()
     print(event)
     rsp = Response(json.dumps(event, default=str), status=200, content_type="application/json")
     return rsp
